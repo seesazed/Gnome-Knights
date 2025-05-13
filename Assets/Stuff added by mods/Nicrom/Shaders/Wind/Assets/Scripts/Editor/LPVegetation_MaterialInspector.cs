@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace UnityEditor {
+namespace Nicrom {
     public class LPVegetation_MaterialInspector : ShaderGUI {
 
         MaterialProperty metallic = null;

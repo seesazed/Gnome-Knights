@@ -20,6 +20,32 @@ public class ShopManager : MonoBehaviour
     public float rangeIncrease = 1f;
     public int damageIncrease = 5;
 
+    [Header("Shop UI")]
+    public GameObject shopUI; // Assign in inspector
+    public MonoBehaviour cameraLookScript; // Drag your camera look script here (e.g., BasicFPCC's look script)
+
+    private bool isShopOpen = false;
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.B)) // Replace with your shop key
+        {
+            ToggleShop();
+        }
+    }
+
+    public void ToggleShop()
+    {
+        isShopOpen = !isShopOpen;
+        shopUI.SetActive(isShopOpen);
+
+        if (cameraLookScript != null)
+            cameraLookScript.enabled = !isShopOpen;
+
+        Cursor.lockState = isShopOpen ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = isShopOpen;
+    }
+
     // Button click handlers
 
     public void BuyMaxHealth()
@@ -53,9 +79,8 @@ public class ShopManager : MonoBehaviour
     {
         if (playerCurrency.SpendMoney(attackSpeedCost))
         {
-            // Ensure that the cooldown doesn't go below a threshold
             playerStats.attackCooldown -= attackSpeedIncrease;
-            playerStats.attackCooldown = Mathf.Max(0.1f, playerStats.attackCooldown); // Limit the cooldown to a minimum of 0.1s
+            playerStats.attackCooldown = Mathf.Max(0.1f, playerStats.attackCooldown);
             Debug.Log("Attack speed increased!");
         }
         else

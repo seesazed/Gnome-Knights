@@ -2,23 +2,22 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-    [Header("Sword Settings")]
-    public int baseDamage = 20; // Default sword damage
-    public int currentDamage; // Damage that can change with upgrades
-    public bool canDamage = true; // Flag to enable/disable damage
-
+    [Header("Attack Settings")]
+    public bool canDamage = false; // Set by animation events
     private float nextAttackTime = 0f;
-    public float attackCooldown = 1f; // Cooldown time for attacks (in seconds)
 
     public PlayerStats playerStats;
 
     void Start()
     {
-        // Initialize current damage to base damage at the start
-        currentDamage = playerStats.attackDamage; // Set damage based on PlayerStats
+        if (playerStats == null)
+        {
+            playerStats = GetComponentInParent<PlayerStats>();
+            if (playerStats == null)
+                Debug.LogError("PlayerStats reference is missing!");
+        }
     }
 
-    // Detect collisions with zombies
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Zombie") && canDamage && Time.time >= nextAttackTime)
@@ -26,12 +25,24 @@ public class PlayerAttack : MonoBehaviour
             ZombieHealth zombieHealth = other.GetComponent<ZombieHealth>();
             if (zombieHealth != null)
             {
-                zombieHealth.TakeDamage(currentDamage);
-                Debug.Log("🗡️ Dealt " + currentDamage + " damage to zombie");
+                zombieHealth.TakeDamage(playerStats.attackDamage);
+                Debug.Log("🗡️ Dealt " + playerStats.attackDamage + " damage to zombie");
 
-                // Handle attack cooldown
-                nextAttackTime = Time.time + attackCooldown;
+                nextAttackTime = Time.time + playerStats.attackCooldown;
             }
         }
+    }
+
+    // These should be triggered by animation events
+    public void EnableDamage()
+    {
+        canDamage = true;
+        Debug.Log("🗡️ Damage Enabled");
+    }
+
+    public void DisableDamage()
+    {
+        canDamage = false;
+        Debug.Log("❌ Damage Disabled");
     }
 }
